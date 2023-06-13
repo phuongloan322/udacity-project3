@@ -1,0 +1,56 @@
+version: 2.1
+
+
+jobs:
+  lint-app-microservices:
+    docker:
+      - image: circleci/node:14.17.3
+    steps:
+      - checkout
+  build-docker:
+    machine: true
+    steps:
+      - checkout
+      - run:
+          name: Build docker container - microservices
+          command: |
+            echo "------------------ Installing dependencies---------------------------"
+            sudo curl -LO https://nodejs.org/dist/v16.16.0/node-v16.16.0-linux-x64.tar.xz
+            sudo tar -xvf node-v16.16.0-linux-x64.tar.xz
+            sudo cp -r node-v16.16.0-linux-x64/{bin,include,lib,share} /usr/
+            node --version => v
+            sudo apt install nodejs
+
+            echo "--------- The images - Building ------------"
+
+            docker build -t udagram-api-feed ./udagram-api-feed
+            docker tag udagram-api-feed phuongloan/udagram-api-feed:v1
+
+            docker build -t udagram-api-user ./udagram-api-user
+            docker tag udagram-api-user phuongloan/udagram-api-user:v1
+            
+            docker build -t udagram-frontend ./udagram-frontend
+            docker tag udagram-frontend phuongloan/udagram-frontend:v1
+
+            docker build -t udagram-reverseproxy ./udagram-reverseproxy
+            docker tag udagram-reverseproxy phuongloan/reverseproxy:v1
+
+            echo "-------- All images succesfully built----------"
+
+            echo " ------- login in to hub--------"
+
+            docker login -u phuongloan -p $DOCKERHUB_PASSWORD
+
+            echo "-------------- Pushing images to dockerhub-------"
+            
+            docker push phuongloan/udagram-api-feed:v1
+            docker push phuongloan/udagram-api-user:v1
+            docker push phuongloan/udagram-frontend:v1
+            docker push phuongloan/reverseproxy:v1
+workflows:
+  default:
+    jobs:
+      - lint-app-microservices
+      - build-docker:
+          requires: [lint-app-microservices]
+
