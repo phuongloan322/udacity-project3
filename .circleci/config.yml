@@ -30,7 +30,7 @@ jobs:
             docker tag udagram-api-user phuongloan/udagram-api-user:v1
             
             docker build -t udagram-frontend ./udagram-frontend
-            docker tag udagram-frontend phuongloan/udagram-frontend:v1
+            docker tag udagram-frontend phuongloan/udagram-frontend:v6
 
             docker build -t udagram-reverseproxy ./udagram-reverseproxy
             docker tag udagram-reverseproxy phuongloan/reverseproxy:v1
@@ -45,7 +45,7 @@ jobs:
             
             docker push phuongloan/udagram-api-feed:v1
             docker push phuongloan/udagram-api-user:v1
-            docker push phuongloan/udagram-frontend:v1
+            docker push phuongloan/udagram-frontend:v6
             docker push phuongloan/reverseproxy:v1
 workflows:
   default:
